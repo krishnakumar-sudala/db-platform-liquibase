@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: liquibase-changelogs
+  namespace: db-platform
+data:
+  liquibase.properties: |
+    driver: org.postgresql.Driver
+    url: ${LB_URL}
+    username: ${LB_USERNAME}
+    password: ${LB_PASSWORD}
+    changeLogFile: ${LB_CHANGELOG_FILE}
+  changelog-master.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <databaseChangeLog
+            xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.23.xsd">
+
+        <include file="changelog/001-init.xml"/>
+        <include file="changelog/002-users.xml"/>
+        <include file="changelog/004-user-identity.xml"/>
+
+    </databaseChangeLog>
+  changelog/004-user-identity.xml: |
+    <!-- your final 004 XML goes here -->

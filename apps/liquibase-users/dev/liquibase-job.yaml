@@ -1,0 +1,43 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: liquibase-migration
+  namespace: db-platform
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: liquibase
+          image: quay.io/kk/liquibase:1.0
+          imagePullPolicy: IfNotPresent
+          workingDir: /liquibase
+          command: ["liquibase"]
+          args: ["update"]
+          env:
+            - name: LB_URL
+              value: "jdbc:postgresql://users-postgres.db-platform.svc.cluster.local:5432/platform"
+            - name: LB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: users-db-credentials
+                  key: username
+            - name: LB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: users-db-credentials
+                  key: password
+            - name: LB_CHANGELOG_FILE
+              value: "changelog-master.xml"
+          volumeMounts:
+            - name: liquibase-changelogs
+              mountPath: /liquibase
+      volumes:
+        - name: liquibase-changelogs
+          configMap:
+            name: liquibase-changelogs
