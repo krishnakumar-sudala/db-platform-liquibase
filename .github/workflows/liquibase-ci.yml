@@ -1,0 +1,63 @@
+name: Liquibase CI
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  liquibase-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Download Liquibase
+        run: |
+          curl -L https://github.com/liquibase/liquibase/releases/download/v4.29.2/liquibase-4.29.2.tar.gz -o liquibase.tar.gz
+          tar -xzf liquibase.tar.gz
+          sudo mv liquibase /usr/local/liquibase
+          echo "/usr/local/liquibase" >> $GITHUB_PATH
+
+      - name: Validate changelog
+        working-directory: ./liquibase
+        env:
+          LB_URL: ${{ secrets.LB_URL }}
+          LB_USERNAME: ${{ secrets.LB_USERNAME }}
+          LB_PASSWORD: ${{ secrets.LB_PASSWORD }}
+        run: |
+          liquibase \
+            --url=$LB_URL \
+            --username=$LB_USERNAME \
+            --password=$LB_PASSWORD \
+            --changeLogFile=changelog-master.xml \
+            validate
+
+  build-liquibase-image:
+    needs: liquibase-validate
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Login to registry
+        uses: docker/login-action@v3
+        with:
+          registry: quay.io
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Build and push Liquibase image
+        run: |
+          docker build -t quay.io/kk/liquibase:${{ github.sha }} -f liquibase/Dockerfile liquibase
+          docker tag quay.io/kk/liquibase:${{ github.sha }} quay.io/kk/liquibase:latest
+          docker push quay.io/kk/liquibase:${{ github.sha }}
+          docker push quay.io/kk/liquibase:latest
