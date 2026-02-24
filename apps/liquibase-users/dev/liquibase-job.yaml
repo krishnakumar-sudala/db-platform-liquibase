@@ -14,7 +14,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: liquibase
-          image: quay.io/kk/liquibase:1.0
+          image: image: ghcr.io/krishnakumar-sudala/db-platform-liquibase:latest
           imagePullPolicy: IfNotPresent
           workingDir: /liquibase
           command: ["liquibase"]
