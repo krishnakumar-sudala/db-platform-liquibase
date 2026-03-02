@@ -32,20 +32,13 @@ jobs:
           unzip liquibase.zip -d liquibase
           echo "$PWD/liquibase" >> $GITHUB_PATH
 
-      - name: Validate changelog
-        env:
-          LB_URL: ${{ secrets.LB_CI_URL }}
-          LB_USERNAME: ${{ secrets.LB_CI_USERNAME }}
-          LB_PASSWORD: ${{ secrets.LB_CI_PASSWORD }}
+      - name: Validate changelog (offline)
         run: |
           liquibase \
-            --url="$LB_URL" \
-            --username="$LB_USERNAME" \
-            --password="$LB_PASSWORD" \
+            --url=offline:postgresql \
             --changeLogFile=changelog-master.xml \
             validate
-
-
+            
   build-and-push:
     name: Build & Push Liquibase Image to GHCR
     needs: liquibase-validate
