@@ -1,0 +1,16 @@
+namespace: users-service-staging
+
+image:
+  repository: ghcr.io/krishnakumar-sudala/db-platform-liquibase
+  tag: staging
+
+liquibase:
+  url: "jdbc:postgresql://users-postgres-staging.db-platform.svc.cluster.local:5432/platform_staging"
+  username: "staging_user"
+  password: "staging_password"
+  changeLogFile: "changelog-master.xml"
+
+dbSecret:
+  name: users-db-credentials-staging
+  username: "staging_user"
+  password: "staging_password"

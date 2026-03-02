@@ -1,0 +1,16 @@
+namespace: users-service-prod
+
+image:
+  repository: ghcr.io/krishnakumar-sudala/db-platform-liquibase
+  tag: prod
+
+liquibase:
+  url: "jdbc:postgresql://users-postgres-prod.db-platform.svc.cluster.local:5432/platform"
+  username: "prod_user"
+  password: "prod_password"
+  changeLogFile: "changelog-master.xml"
+
+dbSecret:
+  name: users-db-credentials-prod
+  username: "prod_user"
+  password: "prod_password"

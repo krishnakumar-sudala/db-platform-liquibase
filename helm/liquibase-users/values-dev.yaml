@@ -1,0 +1,16 @@
+namespace: users-service-dev
+
+image:
+  repository: ghcr.io/krishnakumar-sudala/db-platform-liquibase
+  tag: dev
+
+liquibase:
+  url: "jdbc:postgresql://users-postgres-dev.db-platform.svc.cluster.local:5432/platform_dev"
+  username: "dev_user"
+  password: "dev_password"
+  changeLogFile: "changelog-master.xml"
+
+dbSecret:
+  name: users-db-credentials-dev
+  username: "dev_user"
+  password: "dev_password"

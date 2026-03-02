@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: liquibase-migration
-  namespace: db-platform
+  namespace: {{ .Values.namespace }}
   annotations:
     argocd.argoproj.io/hook: Sync
     argocd.argoproj.io/hook-delete-policy: HookSucceeded
@@ -14,26 +14,26 @@ spec:
       restartPolicy: Never
       containers:
         - name: liquibase
-          image: image: ghcr.io/krishnakumar-sudala/db-platform-liquibase:latest
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: IfNotPresent
           workingDir: /liquibase
           command: ["liquibase"]
           args: ["update"]
           env:
             - name: LB_URL
-              value: "jdbc:postgresql://users-postgres.db-platform.svc.cluster.local:5432/platform"
+              value: "{{ .Values.liquibase.url }}"
             - name: LB_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: users-db-credentials
+                  name: {{ .Values.dbSecret.name }}
                   key: username
             - name: LB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: users-db-credentials
+                  name: {{ .Values.dbSecret.name }}
                   key: password
             - name: LB_CHANGELOG_FILE
-              value: "changelog-master.xml"
+              value: "{{ .Values.liquibase.changeLogFile }}"
           volumeMounts:
             - name: liquibase-changelogs
               mountPath: /liquibase

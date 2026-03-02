@@ -2,14 +2,15 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: liquibase-changelogs
-  namespace: db-platform
+  namespace: {{ .Values.namespace }}
 data:
   liquibase.properties: |
     driver: org.postgresql.Driver
-    url: ${LB_URL}
-    username: ${LB_USERNAME}
-    password: ${LB_PASSWORD}
-    changeLogFile: ${LB_CHANGELOG_FILE}
+    url: {{ .Values.liquibase.url }}
+    username: {{ .Values.liquibase.username }}
+    password: {{ .Values.liquibase.password }}
+    changeLogFile: {{ .Values.liquibase.changeLogFile }}
+
   changelog-master.xml: |
     <?xml version="1.0" encoding="UTF-8"?>
     <databaseChangeLog
@@ -23,5 +24,6 @@ data:
         <include file="changelog/004-user-identity.xml"/>
 
     </databaseChangeLog>
+
   changelog/004-user-identity.xml: |
-    <!-- your final 004 XML goes here , will add later-->
+    <!-- your final 004 XML goes here -->
