@@ -91,9 +91,9 @@ jobs:
           token: ${{ secrets.GH_PAT }}
           path: gitops
 
-      - name: Update liquibase-job.yaml with new image tag
+      - name: Update Liquibase image tag in Helm values
         run: |
-          sed -i "s|image:.*|image: ghcr.io/${{ github.repository }}:${{ github.sha }}|" gitops/apps/liquibase-users/dev/liquibase-job.yaml
+          sed -i "s|tag:.*|tag: \"${{ github.sha }}\"|" db-platform-liquibase\helm\liquibase-users\values-dev.yaml
 
       - name: Commit and push changes
         run: |

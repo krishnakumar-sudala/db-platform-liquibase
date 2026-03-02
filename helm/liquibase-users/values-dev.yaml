@@ -5,7 +5,7 @@ image:
   tag: dev
 
 liquibase:
-  url: "jdbc:postgresql://users-postgres-dev.db-platform.svc.cluster.local:5432/platform_dev"
+  url: "jdbc:postgresql://users-postgres-dev.db-platform.svc.cluster.local:5432/platform"
   username: "dev_user"
   password: "dev_password"
   changeLogFile: "changelog-master.xml"
